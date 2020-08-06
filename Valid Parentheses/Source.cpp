@@ -1,44 +1,41 @@
-#include <string>
 #include <iostream>
 #include <sstream>
-#include <set>
+#include <string>
 #include <map>
+#include <stack>
 using namespace std;
 class Solution {
 private:
-    map<char, char>bracket = { { '(', ')' } , { '{', '}' } , { '[' , ']' } };
-    bool process(char c, stringstream& ss) {
-        bool b = 1;
-        char tmp; ss >> tmp;
-        //({
-        if (bracket.find(tmp) != bracket.end()) {
-            b = process(tmp, ss);
-            if (b == 0) {
-                return b;
-            }
-        }
-        //(]
-        else if (tmp != bracket.find(c)->second) {
-            return 0;
-        }
-        //()
-        else {
-            return 1;
-        }
-        return process(c, ss);
-    }
+    unordered_map<char, char>bracket = { { '(', ')' } , { '{', '}' } , { '[' , ']' } };
 public:
     bool isValid(string s) {
-        bool cond = 1;
         stringstream ss(s);
         char c;
+        stack<char>opbracket;
         while (ss >> c) {
-            cond = process(c, ss);
-            if (cond == 0) {
-                return 0;
+            //if opening bracket
+            if (bracket.find(c) != bracket.end()) {
+                opbracket.push(c);
+            }
+            //if closing bracket
+            else {
+                if (opbracket.size() == 0) {
+                    return 0;
+                }
+                if (c == bracket.find(opbracket.top())->second) {
+                    opbracket.pop();
+                }
+                else {
+                    return 0;
+                }
             }
         }
-        return cond;
+        if (opbracket.size() == 0) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
 };
 int main() {
